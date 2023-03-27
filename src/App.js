@@ -9,8 +9,6 @@ import search from "./search.jpeg";
 import logo from "./logo.jpg";
 import { Typography,Box } from "@mui/material";
 
-const APP_ID = "95fe71db";
-const APP_KEY = "8021bc200a09add1bf28130682cd088a";
 
 const RecipeContainer = styled.div`
   display: flex;
