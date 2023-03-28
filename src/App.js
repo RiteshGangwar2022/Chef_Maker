@@ -1,27 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Axios from "axios";
 import styled from "styled-components";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
-import search from "./search.jpeg";
-import logo from "./logo.jpg";
-import { Typography,Box } from "@mui/material";
 
+import logo from "./logo.jpg";
+import search from "./search.jpeg";
+
+const APP_ID = "95fe71db";
+const APP_KEY = "8021bc200a09add1bf28130682cd088a	";
 
 const RecipeContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 5px;
-  width: 300px;
-  box-shadow: 0 10px 20px 0 #aaa;
-  border-radius: 10px;
-  background:#006064;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    width: 400px;
+    box-shadow: rgb(170, 170, 170) 0px 10px 20px 0px;
+    border-radius: 15px;
+    background: white;
 `;
 const CoverImage = styled.img`
   object-fit: cover;
-  height: 200px;
+  height: 300px;
+  border-radius: 10px;
 `;
 const RecipeName = styled.span`
   font-size: 18px;
@@ -31,28 +34,31 @@ const RecipeName = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align:center;
 `;
 const SeeMoreText = styled.span`
-  color: #eb3300;
+  color: red;
   font-size: 18px;
   text-align: center;
-  border: solid 1px #eb3300;
+  border: solid 1px red;
   border-radius: 3px;
   padding: 10px 15px;
   cursor: pointer;
+  background-color:rgb(239, 154, 154);
+  border-radius:10px;
 `;
 const IngredientsText = styled(SeeMoreText)`
   color: green;
   border: solid 1px green;
   margin-bottom: 12px;
-  background:#7cb342;
+  background:rgb(197, 225, 165);
   border-radius: 10px;
 `;
 const SeeNewTab = styled(SeeMoreText)`
   color: red;
   border: solid 1px green;
   border-radius: 10px;
-  background:#ff8a65;
+  background:rgb(239, 154, 154);
 `;
 const RecipeComponent = (props) => {
   const [show, setShow] = useState("");
@@ -61,12 +67,11 @@ const RecipeComponent = (props) => {
   return (
     <RecipeContainer>
       <Dialog
-        onClose={() => console.log("adsadad")}
+        onClose={() => { }}
         aria-labelledby="simple-dialog-title"
         open={!!show}
-      
       >
-        <DialogTitle style={{ align:"center"}}>Ingredients</DialogTitle>
+        <DialogTitle>Ingredients</DialogTitle>
         <DialogContent>
           <RecipeName>{label}</RecipeName>
           <table>
@@ -94,9 +99,9 @@ const RecipeComponent = (props) => {
       <IngredientsText onClick={() => setShow(!show)}>
         Ingredients
       </IngredientsText>
-      <SeeNewTab  onClick={() => window.open(url)}>
+      <SeeMoreText onClick={() => window.open(url)}>
         See Complete Recipe
-      </SeeNewTab>
+      </SeeMoreText>
     </RecipeContainer>
   );
 };
@@ -108,9 +113,12 @@ const AppName = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  color:rgb(116, 156, 56);
+  height:80px;
 `;
+
 const Header = styled.div`
-  background-color: #244a68;
+  background-color:rgb(69, 90, 100);;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -125,10 +133,8 @@ const SearchBox = styled.div`
   flex-direction: row;
   padding: 10px 10px;
   border-radius: 8px;
-  margin-left: 20px;
-  width: 50%;
+  width: 40%;
   background-color: white;;
-
 `;
 const SearchIcon = styled.img`
   width: 20px;
@@ -138,14 +144,13 @@ const RecipeImage = styled.img`
   width: 90px;
   height: 60px;
   margin: 15px;
-  border-radius:9px;
+  border-radius:10px;
 `;
 const Placeholder = styled.div`
   margin:auto 30px;
   position:relative;
   top:100px;
   color:white;
-
 `;
 const SearchInput = styled.input`
   color: black;
@@ -164,18 +169,23 @@ const RecipeListContainer = styled.div`
   padding: 20px;
   gap: 20px;
   justify-content: space-evenly;
+  background-color:#546e7a;
 `;
 const AppComponent = () => {
   const [searchQuery, updateSearchQuery] = useState("");
   const [recipeList, updateRecipeList] = useState([]);
   const [timeoutId, updateTimeoutId] = useState();
   const fetchData = async (searchString) => {
+  
     const response = await Axios.get(
       `https://api.edamam.com/search?q=${searchString}&app_id=${APP_ID}&app_key=${APP_KEY}`,
     );
     updateRecipeList(response.data.hits);
   };
 
+  useEffect(() => {
+    fetchData("cheese");
+  }, []);
   const onTextChange = (e) => {
     clearTimeout(timeoutId);
     updateSearchQuery(e.target.value);
@@ -184,7 +194,14 @@ const AppComponent = () => {
   };
 
   return (
-    
+    <Container>
+      <Header>
+        <AppName className="appname">
+          <RecipeImage src={logo} />
+           <h3>Recipes</h3>
+        </AppName>
+        <SearchBox>
+          <SearchIcon src={search} />
           <SearchInput
             placeholder="Search Recipe"
             value={searchQuery}
@@ -195,12 +212,10 @@ const AppComponent = () => {
       <RecipeListContainer>
         {recipeList?.length ? (
           recipeList.map((recipe, index) => (
-            <RecipeComponent key={index} recipe={recipe} />
+            <RecipeComponent key={index} recipe={recipe.recipe} />
           ))
         ) : (
-          <Placeholder>
-            <Typography variant="h1">Please Search a Recipe!</Typography>
-          </Placeholder>
+          <Placeholder src="/react-recipe-finder/hamburger.svg" />
         )}
       </RecipeListContainer>
     </Container>
